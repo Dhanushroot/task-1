@@ -1,92 +1,139 @@
-# task-1
-## Cyber Security Internship — Task 1: Scan Your Local Network for Open Ports
+# 🛡️ Task 1 — Cyber Security Internship  
+## 🔍 Scan Your Local Network for Open Ports
 
 **Author:** DHANUSH  
 **Repository:** `Task1`  
-**Files included:**  
-- `scan.html` — Nmap HTML output of the scan.  
-- `scan.xml` — (optional) Nmap XML output if present.  
-- `README.md` — this file.  
-- `screenshots/` — (optional) screenshots taken while performing the task.  
-- `notes.md` — (optional) additional notes or Wireshark analysis.
+**Internship Program:** Ministry of MSME, Govt. of India — Cyber Security Internship  
+**Task Objective:** Perform basic network reconnaissance using Nmap to identify open ports and assess potential risks.
 
 ---
 
-## Short summary
+## 📁 Files Included
 
-I performed a TCP SYN port scan of my local network range (`192.168.1.0/24`) using Nmap and saved the results as an HTML report (`scan.html`). The scan found 4 hosts up and multiple open services on one host.
-
----
-
-## Exact command(s) used in kali linux
-
-```bash```
- nmap -sS 192.168.1.0/24 -oX scan.xml        
-
- xsltproc scan.xml -o scan.html               # optional: convert XML to HTML
-
-
-The command and timestamp are recorded in `scan.html`.
+- `scan.html` — Nmap HTML output converted from XML using `xsltproc`.
+- `scan.xml` — Raw XML output from the Nmap scan.
+- `README.md` — This documentation file.
+- `screenshots/` — Screenshots captured during scan execution and result analysis.
 
 ---
 
-## Results — important findings (extracted from `scan.html`)
+## 🧭 Task Summary
 
-- **Scan summary:** Nmap scanned 256 IP addresses; **4 hosts up**.
+This task involved scanning the local network (`192.168.1.0/24`) using a TCP SYN scan (`-sS`) with Nmap to identify active hosts and open ports. The goal was to understand network exposure, recognize potentially vulnerable services, and document findings in a structured format suitable for GitHub submission.
 
-- **Host: 192.168.1.1**  
-  - Open TCP ports: **135 (msrpc), 445 (microsoft-ds)**.
-
-- **Host: 192.168.1.2**  
-  - All scanned ports closed.
-
-- **Host: 192.168.1.4**  
-  - All scanned ports closed.
-
-- **Host: 192.168.1.5**  
-  - Multiple open TCP services, including:  
-    `21 (ftp), 22 (ssh), 23 (telnet), 25 (smtp), 53 (domain), 80 (http), 111 (rpcbind), 139 (netbios-ssn), 445 (microsoft-ds), 512, 513, 514 (rsh/rlogin/rsh), 1099 (rmiregistry), 1524 (ingreslock), 2049 (nfs), 2121 (ccproxy-ftp), 3306 (mysql), 5432 (postgresql), 5900 (vnc), 6000 (X11), 6667 (irc), 8009 (ajp13), 8180`.  
-    See `scan.html` for the full verbatim output.
+The scan revealed **4 active hosts**, with one host (`192.168.1.5`) exposing a wide range of services across 23 open TCP ports. The results were saved in both XML and HTML formats for clarity and presentation.
 
 ---
 
-## Analysis — potential security risks
+## 🖥️ Commands Used (Kali Linux)
 
-1. **Unnecessary exposed services:** Services such as FTP, Telnet, VNC, databases (MySQL/PostgreSQL), and remote shells increase the attack surface. Telnet and other cleartext protocols may leak credentials.
+```bash
+nmap -sS 192.168.1.0/24 -oX scan.xml
+xsltproc scan.xml -o scan.html
+```
 
-2. **Legacy or risky ports:** Services like rsh/rlogin (512/513/514), NFS/RPC (111/2049), and others can be exploited on misconfigured or unpatched systems.
-
-3. **Database exposure:** Databases accessible over the network can lead to data leakage or unauthorized access if not properly secured.
-
-4. **SMB/NetBIOS (139/445):** Exposed SMB services can be used for lateral movement or exploitation if vulnerable.
-
----
-
-## Recommended mitigations
-
-- **Disable unnecessary services** or restrict them to management VLANs or localhost.  
-- **Use host and network firewalls** (ufw/iptables/windows firewall and gateway rules) to block unused ports.  
-- **Replace insecure protocols** (use SSH instead of Telnet, SFTP/FTPS instead of FTP).  
-- **Harden and patch** all exposed services; enforce strong authentication and TLS where supported.  
-- **Network segmentation:** put untrusted devices on separate VLANs/subnets.  
-- **Monitoring & logging:** enable logs and IDS/IPS to detect suspicious activity.
+- The first command performs a stealth TCP SYN scan and saves results in XML.
+- The second command converts XML to HTML using the `xsltproc` tool for easier viewing.
 
 ---
 
-## How to reproduce
+## 📊 Scan Results — Key Findings
 
-1. Install Nmap from https://nmap.org (choose the appropriate installer for your OS).  
-2. Identify your local network range (e.g., `ip a`, `ifconfig`, or check your router).  
-3. Run the scan using the command shown above.  
-4. Open `scan.html` in a browser to review the results.
+### 🔹 Summary
+- Total IPs scanned: **256**
+- Hosts up: **4**
+- Hosts with open ports: **2**
+- Hosts with all ports closed: **2**
+
+### 🔹 Host Breakdown
+
+| IP Address     | Open Ports | Notable Services |
+|----------------|------------|------------------|
+| `192.168.1.1`  | 135, 445   | MSRPC, Microsoft-DS |
+| `192.168.1.2`  | None       | All ports closed |
+| `192.168.1.4`  | None       | All ports closed |
+| `192.168.1.5`  | 23 ports   | FTP, SSH, Telnet, SMTP, HTTP, RPC, NetBIOS, SMB, RMI, NFS, MySQL, PostgreSQL, VNC, X11, IRC, etc. |
+
+> Full port list for `192.168.1.5`:  
+`21, 22, 23, 25, 53, 80, 111, 139, 445, 512, 513, 514, 1099, 1524, 2049, 2121, 3306, 5432, 5900, 6000, 6667, 8009, 8180`
 
 ---
 
-## What I learned
+## 🔐 Security Analysis
 
-- How to run a TCP SYN (`-sS`) scan with Nmap and save results as XML/HTML.  
-- How to interpret Nmap output to identify live hosts and open ports.  
-- Basic mitigation techniques for exposed services.
+### ⚠️ Risks Identified
+
+1. **Legacy Services Exposed**
+   - Telnet, FTP, rsh/rlogin, and RPC are outdated and insecure.
+   - These protocols transmit data in plaintext and are vulnerable to sniffing and exploitation.
+
+2. **Database Ports Open**
+   - MySQL (`3306`) and PostgreSQL (`5432`) are accessible over the network.
+   - If misconfigured, they can leak sensitive data or allow unauthorized access.
+
+3. **Remote Access Services**
+   - VNC (`5900`), SSH (`22`), and X11 (`6000`) are open.
+   - These can be exploited if weak credentials or outdated versions are used.
+
+4. **SMB/NetBIOS Exposure**
+   - Ports `139` and `445` are commonly targeted for lateral movement and ransomware attacks.
+
+5. **Multiple Attack Surfaces**
+   - The host `192.168.1.5` appears to be a lab or test machine with intentionally exposed services, ideal for vulnerability testing.
 
 ---
 
+## 🛡️ Recommended Mitigations
+
+- 🔒 **Disable unused services** or restrict them to localhost or internal VLANs.
+- 🔥 **Configure firewalls** (e.g., `ufw`, `iptables`, Windows Firewall) to block unnecessary ports.
+- 🔁 **Replace insecure protocols**: Use SSH instead of Telnet, SFTP instead of FTP.
+- 🧱 **Patch and harden** all exposed services; enforce strong authentication and encryption.
+- 🧩 **Segment the network**: Isolate vulnerable or experimental devices on separate subnets.
+- 📈 **Enable monitoring**: Use IDS/IPS tools and log analysis to detect suspicious activity.
+
+---
+
+## 🧪 How to Reproduce
+
+1. **Install Nmap**  
+   - Download from [nmap.org](https://nmap.org/download.html) for your OS.
+     
+```bash
+   sudo apt update            #Debian
+   sudo apt install nmap      #Debian
+```
+
+2. **Identify your IP range**  
+   - Use `ip a`, `ifconfig`, or check your router settings.
+
+3. **Run the scan**
+   ```bash
+   nmap -sS 192.168.1.0/24 -oX scan.xml
+   xsltproc scan.xml -o scan.html
+   ```
+
+4. **Review results**
+   - Open `scan.html` in a browser for a formatted report.
+
+---
+
+## 📚 What I Learned
+
+- How to perform a TCP SYN scan using Nmap and interpret results.
+- How to convert scan output to HTML using `xsltproc`.
+- How to identify common services and assess their security implications.
+- How to document findings and mitigations in a structured format.
+- Importance of network reconnaissance in vulnerability assessment.
+
+---
+
+## 🧠 Reflections & Next Steps
+
+This task helped reinforce the fundamentals of port scanning and service enumeration. It also highlighted how even basic scans can reveal significant exposure in a network. Going forward, I plan to:
+
+- Automate scans with CLI wrappers and branded output.
+- Integrate service version detection (`-sV`) and OS fingerprinting (`-O`) for deeper analysis.
+- Expand this into a modular recon tool with flags for scan type, output format, and alerting.
+
+---
